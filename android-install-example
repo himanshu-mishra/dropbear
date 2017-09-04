@@ -1,0 +1,11 @@
+Sample command to compile for android kitkat and above
+
+export API_LEVEL=android-19
+export COMPILER_ARCH=arm-linux-androideabi-4.9
+export ANDROID_NDK=$HOME/Android/Sdk/ndk-bundle
+export CC=$ANDROID_NDK/toolchains/$COMPILER_ARCH/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc
+export CCOPT="-O2 -fpic --sysroot=/home/ducalpha/adr/ndk/platforms/$API_LEVEL/arch-arm -DANDROID -DOS_ANDROID -pie"
+export CFLAGS="--sysroot=$ANDROID_NDK/platforms/$API_LEVEL/arch-arm -DANDROID -DOS_ANDROID"
+export LDFLAGS="--sysroot=$ANDROID_NDK/platforms/$API_LEVEL/arch-arm -fPIC -mandroid -L$ANDROID_NDK/platforms/$API_LEVEL/arch-arm/usr/lib -pie"
+./configure --host=arm-linux  --disable-utmp --disable-wtmp --disable-utmpx --disable-zlib --disable-syslog
+make
