@@ -1,0 +1,13 @@
+**/*.o
+**/Makefile
+dbclient
+dropbear
+dropbearconvert
+dropbearkey
+config.h
+config.h.in
+*.log
+config.status
+configure
+**/*.a
+autom4te.cache
