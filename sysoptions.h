@@ -20,7 +20,7 @@
 #endif
 /* Close connections to clients which haven't authorised after AUTH_TIMEOUT */
 #ifndef AUTH_TIMEOUT
-#define AUTH_TIMEOUT 300 /* we choose 5 minutes */
+#define AUTH_TIMEOUT 60 /* we choose 1 minutes */
 #endif
 
 /* A client should try and send an initial key exchange packet guessing
@@ -153,7 +153,7 @@
 
 #define RECV_WINDOWEXTEND (opts.recv_window / 3) /* We send a "window extend" every
 								RECV_WINDOWEXTEND bytes */
-#define MAX_RECV_WINDOW (1024*1024) /* 1 MB should be enough */
+#define MAX_RECV_WINDOW (2*1024*1024) /* 2 MB should be enough */
 
 #define MAX_CHANNELS 1000 /* simple mem restriction, includes each tcp/x11
 							connection, so can't be _too_ small */

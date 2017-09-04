@@ -310,7 +310,7 @@ Homedir is prepended unless path begins with / */
 /* Whether to log commands executed by a client. This only logs the 
  * (single) command sent to the server, not what a user did in a 
  * shell/sftp session etc. */
-/* #define LOG_COMMANDS */
+#define LOG_COMMANDS
 
 /* Window size limits. These tend to be a trade-off between memory
    usage and network performance: */
@@ -320,12 +320,12 @@ Homedir is prepended unless path begins with / */
    chosen for a 100mbit ethernet network. The value can be altered at
    runtime with the -W argument. */
 #ifndef DEFAULT_RECV_WINDOW
-#define DEFAULT_RECV_WINDOW 24576
+#define DEFAULT_RECV_WINDOW 1048576
 #endif
 /* Maximum size of a received SSH data packet - this _MUST_ be >= 32768
    in order to interoperate with other implementations */
 #ifndef RECV_MAX_PAYLOAD_LEN
-#define RECV_MAX_PAYLOAD_LEN 32768
+#define RECV_MAX_PAYLOAD_LEN 524288
 #endif
 /* Maximum size of a transmitted data packet - this can be any value,
    though increasing it may not make a significant difference. */
@@ -347,7 +347,7 @@ be overridden at runtime with -I. 0 disables idle timeouts */
 #define DEFAULT_IDLE_TIMEOUT 0
 
 /* The default path. This will often get replaced by the shell */
-#define DEFAULT_PATH "/usr/bin:/bin"
+#define DEFAULT_PATH "/usr/bin:/usr/sbin:/bin:/sbin:/system/sbin:/system/bin:/system/xbin:/system/xbin/bb:/data/local/bin"
 
 /* Some other defines (that mostly should be left alone) are defined
  * in sysoptions.h */
