@@ -137,6 +137,16 @@ int signkey_generate(enum signkey_type keytype, int bits, const char* filename, 
 		goto out;
 	}
 
+#ifdef __ANDROID__
+	/* Hard links are not possible and renam. */
+	if (skip_exist && access(filename, F_OK) == 0) {
+		/* Ok. */
+	} else if (rename(fn_temp, filename) < 0) {
+		dropbear_log(LOG_ERR, "Failed moving key file to %s: %s", filename,
+				strerror(errno));
+		ret = DROPBEAR_FAILURE;
+	}
+#else
 	if (link(fn_temp, filename) < 0) {
 		/* If generating keys on connection (skipexist) it's OK to get EEXIST 
 		- we probably just lost a race with another connection to generate the key */
@@ -148,6 +158,7 @@ int signkey_generate(enum signkey_type keytype, int bits, const char* filename, 
 			goto out;
 		}
 	}
+#endif
 
 out:
 	if (buf) {
