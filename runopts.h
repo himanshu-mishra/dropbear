@@ -126,6 +126,7 @@ typedef struct cli_runopts {
 	char *progname;
 	char *remotehost;
 	char *remoteport;
+	char *interface;
 
 	char *own_user;
 	char *username;

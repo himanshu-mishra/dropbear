@@ -28,7 +28,7 @@ errstring is only set on DROPBEAR_FAILURE, returns failure message for the last 
 typedef void(*connect_callback)(int result, int sock, void* data, const char* errstring);
 
 /* Always returns a progress connection, if it fails it will call the callback at a later point */
-struct dropbear_progress_connection * connect_remote (const char* remotehost, const char* remoteport,
+struct dropbear_progress_connection * connect_remote (const char* remotehost, const char* remoteport, const char* interface,
 	connect_callback cb, void *cb_data);
 
 /* Sets up for select() */

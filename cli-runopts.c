@@ -58,6 +58,7 @@ static void printhelp() {
 #endif
 					"-p <remoteport>\n"
 					"-l <username>\n"
+					"-b <interface>\n"
 					"-t    Allocate a pty\n"
 					"-T    Don't allocate a pty\n"
 					"-N    Don't run a remote command\n"
@@ -137,6 +138,7 @@ void cli_getopts(int argc, char ** argv) {
 	cli_opts.progname = argv[0];
 	cli_opts.remotehost = NULL;
 	cli_opts.remoteport = NULL;
+	cli_opts.interface = NULL;
 	cli_opts.username = NULL;
 	cli_opts.cmd = NULL;
 	cli_opts.no_cmd = 0;
@@ -212,6 +214,9 @@ void cli_getopts(int argc, char ** argv) {
 					break;
 				case 'p': /* remoteport */
 					next = &cli_opts.remoteport;
+					break;
+				case 'b':
+					next = &cli_opts.interface;
 					break;
 #ifdef ENABLE_CLI_PUBKEY_AUTH
 				case 'i': /* an identityfile */
@@ -313,8 +318,8 @@ void cli_getopts(int argc, char ** argv) {
 					print_version();
 					exit(EXIT_SUCCESS);
 					break;
-				case 'b':
-					next = &dummy;
+				/*case 'b':
+					next = &dummy;*/
 					/* FALLTHROUGH */
 				default:
 					fprintf(stderr,

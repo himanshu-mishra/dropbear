@@ -9,6 +9,7 @@ struct dropbear_progress_connection {
 	struct addrinfo *res_iter;
 
 	char *remotehost, *remoteport; /* For error reporting */
+	char *interface;
 
 	connect_callback cb;
 	void *cb_data;
@@ -29,6 +30,7 @@ static void remove_connect(struct dropbear_progress_connection *c, m_list_elem *
 	}
 	m_free(c->remotehost);
 	m_free(c->remoteport);
+	m_free(c->interface);
 	m_free(c->errstring);
 	m_free(c);
 
@@ -56,7 +58,7 @@ static void connect_try_next(struct dropbear_progress_connection *c) {
 #ifdef DROPBEAR_CLIENT_TCP_FAST_OPEN
 	struct msghdr message;
 #endif
-
+        TRACE(("enter connect_try_next '%s'", c->remotehost))
 	for (r = c->res_iter; r; r = r->ai_next)
 	{
 		dropbear_assert(c->sock == -1);
@@ -105,6 +107,20 @@ static void connect_try_next(struct dropbear_progress_connection *c) {
 
 		/* Normal connect(), used as fallback for TCP fastopen too */
 		if (!fastopen) {
+			if (c->interface != NULL) {
+				TRACE(("HMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM '%s' '%d' -- '%d'", c->interface, c->sock, r->ai_addr->sa_family))
+		                struct sockaddr_in source = { .sin_family = AF_INET };
+				source.sin_addr.s_addr = inet_addr(c->interface);
+		                //inet_pton(AF_INET, c->interface, &source.sin_addr);
+				source.sin_port = 0;
+				int ret = bind(c->sock, (struct sockaddr *) &source, sizeof source);
+	        	        if (ret < 0) {
+	                	        TRACE(("bind error"));
+	                        	continue;
+	                        } else {
+					TRACE(("bind success '%d'", ret))
+				}
+			}
 			res = connect(c->sock, r->ai_addr, r->ai_addrlen);
 		}
 
@@ -130,6 +146,7 @@ static void connect_try_next(struct dropbear_progress_connection *c) {
 
 /* Connect via TCP to a host. */
 struct dropbear_progress_connection *connect_remote(const char* remotehost, const char* remoteport,
+		const char* interface,
 	connect_callback cb, void* cb_data)
 {
 	struct dropbear_progress_connection *c = NULL;
@@ -139,6 +156,12 @@ struct dropbear_progress_connection *connect_remote(const char* remotehost, cons
 	c = m_malloc(sizeof(*c));
 	c->remotehost = m_strdup(remotehost);
 	c->remoteport = m_strdup(remoteport);
+	if (interface != NULL) {
+		c->interface = m_strdup(interface);
+	} else {
+		c->interface = NULL;
+	}
+
 	c->sock = -1;
 	c->cb = cb;
 	c->cb_data = cb_data;
@@ -209,7 +232,7 @@ void handle_connect_fds(fd_set *writefd) {
 			continue;
 		}
 
-		TRACE(("handling %s port %s socket %d", c->remotehost, c->remoteport, c->sock));
+		TRACE(("handling %s port %s interface %s socket %d", c->remotehost, c->remoteport, c->interface, c->sock));
 
 		if (getsockopt(c->sock, SOL_SOCKET, SO_ERROR, &val, &vallen) != 0) {
 			TRACE(("handle_connect_fds getsockopt(%d) SO_ERROR failed: %s", c->sock, strerror(errno)))
